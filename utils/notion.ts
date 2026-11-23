@@ -10,17 +10,17 @@ export const fetchPages = async ({ slug, tag }: { slug?: string, tag?: string })
       rich_text: {
         is_not_empty: true
       }
-    }
-  ]
-
-  if (process.env.VERCEL_ENV === 'production') {
-    and.push({
+    },
+    {
+      // isPublic is the publish switch: only checked rows go live.
+      // (Upstream applied this only on Vercel production; a static
+      // export build IS the production publish, so it applies always.)
       property: 'isPublic',
       checkbox: {
         equals: true
       }
-    })
-  }
+    }
+  ]
 
   if (slug) {
     and.push({
@@ -40,18 +40,30 @@ export const fetchPages = async ({ slug, tag }: { slug?: string, tag?: string })
     })
   }
 
-  return await notion.databases.query({
-    database_id: DATABASE_ID,
-    filter: {
-      and: and
-    },
-    sorts: [
-      {
-        property: 'published',
-        direction: 'descending'
-      }
-    ]
-  })
+  // Notion returns at most 100 rows per call — page through the rest.
+  const results: any[] = []
+  let cursor: string | undefined = undefined
+  while (true) {
+    const { results: pageResults, next_cursor }: any = await notion.databases.query({
+      database_id: DATABASE_ID,
+      filter: {
+        and: and
+      },
+      sorts: [
+        {
+          property: 'published',
+          direction: 'descending'
+        }
+      ],
+      start_cursor: cursor,
+      page_size: 100
+    })
+    results.push(...pageResults)
+    if (!next_cursor) break
+    cursor = next_cursor
+  }
+
+  return { results }
 }
 
 export const fetchBlocksByPageId = async (pageId: string) => {

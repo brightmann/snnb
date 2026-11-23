@@ -1,6 +1,7 @@
 import Layout from '@/components/Layout'
 import Card from '@/components/Card'
-import { fetchPages } from '@/utils/notion'
+import Pager from '@/components/Pager'
+import { getSortedPages, getTotalPages, getPagePosts } from '@/lib/pagination'
 import { GetStaticProps, NextPage } from 'next'
 import { IndexProps } from '@/types/types'
 import Bio from '@/components/Bio'
@@ -8,16 +9,18 @@ import SEO from '@/components/Seo'
 import { siteConfig } from '@/site.config'
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { results } = await fetchPages({})
+  // Articles list is page 1, newest first (fetchPages sorts by published desc)
+  const sorted = await getSortedPages();
+  const totalPages = getTotalPages(sorted);
   return {
     props: {
-      pages: results ? results : []
-    },
-    revalidate: 10 // ISRを実行するために必要な設定。指定した秒数が経過したらfetchが走り、記事に差分があれば再ビルド
+      pages: getPagePosts(sorted, 1),
+      totalPages,
+    }
   }
 }
 
-export const Articles: NextPage<IndexProps> = ({ pages }) => {
+export const Articles: NextPage<IndexProps & { totalPages: number }> = ({ pages, totalPages }) => {
   return (
     <Layout>
       <SEO title={siteConfig.title} />
@@ -28,6 +31,7 @@ export const Articles: NextPage<IndexProps> = ({ pages }) => {
             <Card key={index} page={page} />
           ))}
         </div>
+        <Pager currentPage={1} totalPages={totalPages} base='/articles' />
       </div>
     </Layout>
   )

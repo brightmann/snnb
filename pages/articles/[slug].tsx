@@ -20,7 +20,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   })
   return {
     paths: paths,
-    fallback: 'blocking' // Notionからのデータ取得が完了してからレンダリングするようブロッキングする
+    fallback: false
   }
 }
 
@@ -33,7 +33,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 
   return {
     props: { page, blocks },
-    revalidate: 10 // ISRを実行するために必要な設定。指定した秒数が経過したらfetchが走り、記事に差分があれば再ビルド
   }
 }
 
