@@ -25,7 +25,7 @@ export const Articles: NextPage<IndexProps & { totalPages: number }> = ({ pages,
     <Layout>
       <SEO title={siteConfig.title} />
       <div className='pt-5'>
-        <div className=' grid md:gap-6 mt-10 md:grid-cols-2 w-full my-12'>
+        <div className=' grid gap-6 mt-10 w-full my-12'>
           {/* Card */}
           {pages.map((page, index) => (
             <Card key={index} page={page} />

@@ -9,7 +9,7 @@ const Card: FC<CardProps> = ({ page }) => {
       href={`/articles/${getText(page.properties.slug.rich_text)}`}
       className="flex justify-center dark:bg-slate-800"
     >
-      <div className="max-w-sm rounded overflow-hidden shadow-lg w-full my-4 md:my-0 content-between grid">
+      <div className="rounded overflow-hidden shadow-lg w-full my-0 content-between grid">
         {/* title */}
         <div className="px-6 pt-4 w-full flex flex-wrap">
           <h2 className="text-base font-medium mb-3 break-words">

@@ -76,7 +76,7 @@ const Page: NextPage<IndexProps & { currentPage: number; totalPages: number }> =
       <SEO title={siteConfig.title} />
       <div className="pt-5">
         <Bio />
-        <div className="grid md:gap-6 mt-10 md:grid-cols-2 w-full my-12">
+        <div className="grid gap-6 mt-10 w-full my-12">
           {pages.map((page, index) => (
             <Card key={index} page={page} />
           ))}
